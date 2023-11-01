@@ -44,4 +44,41 @@ function get_user()
 
     header('Content-Type: application/json');
     echo json_encode($response);
+};
+
+function get_user_id()
+{
+    global $koneksi;
+    if (!empty($_GET["id"])) {
+        $id = $_GET["id"];
+
+        // Gunakan pernyataan bersiap-siap dengan PDO
+        $query = $koneksi->prepare("SELECT * FROM user_detail WHERE id = :id");
+        $query->bindParam(':id', $id, PDO::PARAM_INT);
+        $query->execute();
+
+        $data = $query->fetchAll(PDO::FETCH_OBJ);
+
+        if (!empty($data)) {
+            $response = array(
+                'status' => 1,
+                'message' => 'Success',
+                'data' => $data
+            );
+        } else {
+            $response = array(
+                'status' => 0,
+                'message' => 'No Data Found'
+            );
+        }
+    } else {
+        $response = array(
+            'status' => 0,
+            'message' => 'Missing ID'
+        );
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode($response);
 }
+
